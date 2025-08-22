@@ -55,31 +55,6 @@
             font-size: 0.75rem;
             width: 100%;
         }
-        .image-text-overlay {
-            position: absolute;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            padding: 10px;
-            font-family: 'Libre Baskerville', serif;
-        }
-        .top-text {
-            top: 20px;
-            left: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            background-color: #364C90;
-            padding: 8px 15px;
-            border-radius: 4px;
-        }
-        .bottom-text {
-            bottom: 60px; /* Acima da legenda */
-            right: 20px;
-            font-size: 1rem;
-            font-style: italic;
-            background-color: #364C90;
-            padding: 6px 12px;
-            border-radius: 4px;
-        }
         @media (min-width: 768px) {
             .split-layout {
                 display: flex;
@@ -108,50 +83,16 @@
                 width: 100%;
                 height: 50vh;
             }
-            .top-text {
-                font-size: 1rem;
-                top: 10px;
-                left: 10px;
-            }
-            .bottom-text {
-                font-size: 0.9rem;
-                bottom: 50px;
-                right: 10px;
-            }
         }
-    </style>
-    <style>
-        /* Aviso discreto para ativar som */
-        #audio-tip {
-            position: fixed;
-            left: 50%;
-            bottom: 16px;
-            transform: translateX(-50%);
-            padding: 10px 14px;
-            background: rgba(0,0,0,.8);
-            color: #fff;
-            font-size: 14px;
-            border-radius: 8px;
-            display: none;
-            z-index: 9999;
-        }
-        #audio-tip.show { display: inline-block; }
     </style>
 </head>
 <body>
-<!-- Tenta iniciar automaticamente -->
-<audio id="bg-audio" loop preload="auto">
-    <source src="audio-025-08.48.mp3" type="audio/mpeg">
-    O seu navegador não suporta áudio HTML5.
-</audio>
-
-<div id="audio-tip">🔊 Toque/role/tecle uma vez para ativar o som</div>
 
 <!-- Cabeçalho -->
 <div class="content-box">
     <div class="header-accent"></div>
     <div class="px-6 py-4">
-        <h1 class="title-font text-2xl font-bold text-center text-[#364C90]">Amostra virtual - Sentença</h1>
+        <h1 class="title-font text-2xl font-bold text-center text-[##364C90]">Amostra virtual - Sentença</h1>
     </div>
 </div>
 
@@ -159,7 +100,7 @@
 <div class="split-layout">
     <!-- Metade do texto -->
     <div class="text-half">
-        <h2 class="title-font text-xl font-bold mb-4 text-[#364C90]">Segura-te, ó rapaz!</h2>
+        <h2 class="title-font text-xl font-bold mb-4 text-[##364C90]">Segura-te, ó rapaz!</h2>
 
         <div class="text-justify space-y-4">
             <p>Vovó Rostalina repreendeu o olhar de Chico com um franzir de sobrancelhas severo, silenciando o que ele e os amigos julgavam ser um elogio. Carregou igualmente o pesado indicador aos lábios e emitiu um chiado para interromper as últimas sílabas da homenagem prestada à moça que passava. O corpo das mulheres é um espaço público onde Chico e os amigos têm total domínio e direitos. Tanto para fazer comentários sobre as sombras do sutiã, o desenterrar de fio dental, as suas sardas ou mesmo para apalpá-lo em público. Era uma chuva de cânticos, palmas, caretas, grunhidas e murmúrios para todas as mulheres que ousassem passar por aquela rua. Fez-se um breve silêncio até que a velha se afastasse, e a orquestra de assobios e risadas continuou.</p>
@@ -178,14 +119,14 @@
         <!-- Seção de Citação -->
         <div class="mt-6">
             <div class="quote-bar px-4 py-3">
-                <h3 class="title-font font-bold text-lg mb-1 text-[#364C90]">Canto é entoado na vida pública quando mulheres passam</h3>
+                <h3 class="title-font font-bold text-lg mb-1 text-[##364C90]">Canto é entoado na vida pública quando mulheres passam</h3>
                 <p class="text-sm italic">(Estamos a ver as nádegas, e coloçamos)</p>
             </div>
         </div>
 
         <!-- Ficha Técnica -->
         <div class="mt-6">
-            <h3 class="title-font text-lg font-bold mb-4 text-[#364C90]">Ficha técnica</h3>
+            <h3 class="title-font text-lg font-bold mb-4 text-[##364C90]">Ficha técnica</h3>
             <div class="space-y-3">
                 <div class="flex">
                     <span class="font-semibold w-28 flex-shrink-0">Texto:</span>
@@ -205,103 +146,12 @@
 
     <!-- Metade da imagem -->
     <div class="image-half">
-        <!-- Texto no canto superior -->
-        <div class="image-text-overlay top-text">
-            Canto é entoando na vida publica quando mulheres passam
-        </div>
-
-        <!-- Texto no canto inferior -->
-        <div class="image-text-overlay bottom-text">
-            estamos a ver nádegas, e combicamos
-        </div>
-
         <div class="image-caption">
             Fotografia: Evito Andrade - Mulher com capulana tradicional
         </div>
     </div>
 </div>
-<script>
-    (function () {
-        const audio = document.getElementById('bg-audio');
-        const tip = document.getElementById('audio-tip');
 
-        // Preferência de som guardada (caso o utilizador já tenha permitido antes)
-        const wantsSound = localStorage.getItem('wantsSound') === '1';
-
-        // Estratégia:
-        // 1) tentar tocar muted (alguns browsers deixam iniciar muted)
-        // 2) assim que possível, desmutar – pode falhar sem gesto do utilizador
-        // 3) se falhar, esperar QUALQUER interação e tocar de imediato
-        const tryPlay = async (unmuteAfter = false) => {
-            try {
-                // iniciar silencioso para maximizar chances de autoplay
-                audio.muted = true;
-                await audio.play();
-
-                if (unmuteAfter || wantsSound) {
-                    // tentar ativar som após pequeno atraso
-                    setTimeout(async () => {
-                        try {
-                            audio.muted = false;
-                            audio.volume = 1.0;
-                            localStorage.setItem('wantsSound', '1');
-                            hideTip();
-                        } catch (e) {
-                            // alguns browsers mantêm o mute até gesto – mostrar tip
-                            showTip();
-                        }
-                    }, 300);
-                } else {
-                    // se não sabemos ainda se o utilizador quer som, mostrar tip
-                    showTip();
-                }
-            } catch (err) {
-                // Autoplay falhou por completo → esperar gesto do utilizador
-                showTip();
-                attachUserGestureHandlers();
-            }
-        };
-
-        const showTip = () => tip.classList.add('show');
-        const hideTip = () => tip.classList.remove('show');
-
-        const onFirstUserGesture = async () => {
-            try {
-                // arrancar imediatamente com som assim que houver QUALQUER gesto
-                audio.muted = false;
-                audio.volume = 1.0;
-                await audio.play();
-                localStorage.setItem('wantsSound', '1');
-                hideTip();
-                detachUserGestureHandlers();
-            } catch (e) {
-                // fallback extremo: manter muted e continuar a ouvir gestos
-                showTip();
-            }
-        };
-
-        const gestureEvents = [
-            'click','pointerdown','touchstart','keydown','wheel','mousedown'
-        ];
-
-        const attachUserGestureHandlers = () => {
-            gestureEvents.forEach(ev => window.addEventListener(ev, onFirstUserGesture, { once: true, passive: true }));
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    // tentar novamente quando a aba voltar a estar visível
-                    tryPlay(true);
-                }
-            });
-        };
-
-        const detachUserGestureHandlers = () => {
-            gestureEvents.forEach(ev => window.removeEventListener(ev, onFirstUserGesture, { once: true }));
-        };
-
-        // Tentar logo ao abrir a página
-        tryPlay(true);
-    })();
-</script>
 <!-- Rodapé -->
 <div class="footer-section p-4 text-center text-sm text-gray-600 mt-auto">
     <p>Amostra Virtual · Literatura Contemporânea</p>
