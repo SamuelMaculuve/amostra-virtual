@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Amostra Virtual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet"/>
+
+    <style>
+        :root{
+            --brand:#364C90;
+        }
+        body{
+            font-family:'Open Sans',sans-serif;
+            background:#f5f2eb;
+            color:#333; line-height:1.6;
+            height:100vh; margin:0;
+            display:flex; flex-direction:column;
+        }
+        .title-font{ font-family:'Libre Baskerville',serif; }
+        .content-box{ background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.08); }
+        .header-accent{ height:6px; background:linear-gradient(90deg,#8B4513,#A0522D,#CD853F); }
+        .quote-bar{ border-left:4px solid #8B4513; background:#faf7f2; }
+        .footer-section{ background:#f8f5ef; border-top:1px solid #e5e1d8; }
+
+        /* === METADES === */
+        .image-half{
+            position:relative;
+            display:flex; align-items:flex-end; color:#fff;
+            text-shadow:1px 1px 3px rgba(0,0,0,.7);
+            overflow:hidden;                  /* importante para os ::before/::after */
+            isolation:isolate;
+        }
+        /* Camada da foto animada (Ken Burns) */
+        .image-half::before{
+            content:"";
+            position:absolute; inset:0;
+            background:
+                    linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)),
+                    url('image-202.jpeg') center/cover no-repeat;
+            transform-origin:center;
+            animation: kenburns 42s ease-in-out infinite alternate;
+            z-index:-2;
+        }
+        /* Brilho/“respiração” + grão leve */
+        .image-half::after{
+            content:"";
+            position:absolute; inset:-10%;
+            background:
+                    radial-gradient(120% 60% at 70% 20%, rgba(255,255,255,.12), transparent 60%),
+                    radial-gradient(100% 80% at 10% 80%, rgba(255,255,255,.06), transparent 60%),
+                    repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 2px, rgba(0,0,0,.02) 2px 4px);
+            mix-blend-mode:soft-light;
+            pointer-events:none;
+            animation: breathe 12s ease-in-out infinite alternate;
+            z-index:-1;
+        }
+
+        .image-caption{
+            background:rgba(0,0,0,.6); color:#fff;
+            padding:8px 12px; font-size:.75rem; width:100%;
+        }
+
+        .image-text-overlay{
+            position:absolute; color:#fff;
+            text-shadow:2px 2px 4px rgba(0,0,0,.8);
+            padding:10px; font-family:'Libre Baskerville',serif;
+            backdrop-filter: blur(3px);
+        }
+        .top-text{
+            top:20px; left:20px;
+            font-size:1.2rem; font-weight:bold;
+            background:var(--brand);
+            padding:8px 15px; border-radius:4px;
+            animation: floatUp 7s ease-in-out infinite alternate, fadeSlideIn 900ms ease-out both;
+        }
+        .bottom-text{
+            bottom:60px; right:20px;           /* acima da legenda */
+            font-size:1rem; font-style:italic;
+            background:var(--brand);
+            padding:6px 12px; border-radius:4px;
+            animation: floatDown 8.5s ease-in-out infinite alternate, fadeSlideIn 1200ms ease-out both;
+        }
+
+        /* Layout Responsivo */
+        @media (min-width:768px){
+            .split-layout{ display:flex; height:calc(100vh - 80px); }
+            .text-half{ width:50%; overflow-y:auto; padding:20px; }
+            .image-half{ width:50%; }
+        }
+        @media (max-width:767px){
+            .split-layout{ display:flex; flex-direction:column; height:auto; }
+            .text-half{ width:100%; padding:20px; }
+            .image-half{ width:100%; height:56vh; }
+            .top-text{ font-size:1rem; top:10px; left:10px; }
+            .bottom-text{ font-size:.9rem; bottom:50px; right:10px; }
+        }
+
+        /* Dica de áudio */
+        #audio-tip{
+            position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
+            padding:10px 14px; background:rgba(0,0,0,.8);
+            color:#fff; font-size:14px; border-radius:8px;
+            display:none; z-index:9999;
+        }
+        #audio-tip.show{ display:inline-block; }
+
+        /* Botão Animar/Pausar */
+        .anim-toggle{
+            position:fixed; right:14px; bottom:16px; z-index:9999;
+            background:#111; color:#fff; border:1px solid rgba(255,255,255,.2);
+            padding:.55rem .75rem; border-radius:.75rem; font-size:.875rem;
+            box-shadow:0 6px 20px rgba(0,0,0,.18);
+            cursor:pointer; user-select:none;
+        }
+        .anim-toggle:hover{ filter:brightness(1.2); }
+
+        /* === KEYFRAMES === */
+        @keyframes kenburns{
+            0%   { transform: scale(1.06) translate3d(0, 0, 0); }
+            50%  { transform: scale(1.12) translate3d(-1.5%, -1.5%, 0); }
+            100% { transform: scale(1.18) translate3d(1.5%, 1.5%, 0); }
+        }
+        @keyframes breathe{
+            0%   { opacity:.25; filter:contrast(100%); }
+            100% { opacity:.45; filter:contrast(115%); }
+        }
+        @keyframes floatUp{
+            0%   { transform: translateY(0) rotate(0.05deg); }
+            100% { transform: translateY(-10px) rotate(-0.05deg); }
+        }
+        @keyframes floatDown{
+            0%   { transform: translateY(0) rotate(-0.05deg); }
+            100% { transform: translateY(10px) rotate(0.05deg); }
+        }
+        @keyframes fadeSlideIn{
+            0%{ opacity:0; transform:translateY(8px); }
+            100%{ opacity:1; transform:translateY(0); }
+        }
+
+        /* Pausar tudo quando body.paused */
+        body.paused *{
+            animation-play-state: paused !important;
+            transition: none !important;
+        }
+
+        /* Acessibilidade: respeitar prefers-reduced-motion */
+        @media (prefers-reduced-motion: reduce){
+            *{
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Áudio -->
+<audio id="bg-audio" loop preload="auto">
+    <source src="audio-025-08.48.mp3" type="audio/mpeg"/>
+    O seu navegador não suporta áudio HTML5.
+</audio>
+<div id="audio-tip">🔊 Toque/role/tecle uma vez para ativar o som</div>
+
+<!-- Botão Animar/Pausar -->
+<button id="animBtn" class="anim-toggle" aria-pressed="false" title="Pausar/Retomar animações">⏯️ Animar</button>
+
+<!-- Cabeçalho -->
+<div class="content-box">
+    <div class="header-accent"></div>
+    <div class="px-6 py-4">
+        <h1 class="title-font text-2xl font-bold text-center" style="color:var(--brand)">Amostra virtual - Sentença</h1>
+    </div>
+</div>
+
+<!-- Layout dividido -->
+<div class="split-layout">
+    <!-- Metade do texto -->
+    <div class="text-half">
+        <h2 class="title-font text-xl font-bold mb-4" style="color:var(--brand)">Segura-te, ó rapaz!</h2>
+
+        <div class="text-justify space-y-4">
+            <p>Vovó Rostalina repreendeu o olhar de Chico com um franzir de sobrancelhas severo, silenciando o que ele e os amigos julgavam ser um elogio. Carregou igualmente o pesado indicador aos lábios e emitiu um chiado para interromper as últimas sílabas da homenagem prestada à moça que passava. O corpo das mulheres é um espaço público onde Chico e os amigos têm total domínio e direitos. Tanto para fazer comentários sobre as sombras do sutiã, o desenterrar de fio dental, as suas sardas ou mesmo para apalpá-lo em público. Era uma chuva de cânticos, palmas, caretas, grunhidas e murmúrios para todas as mulheres que ousassem passar por aquela rua. Fez-se um breve silêncio até que a velha se afastasse, e a orquestra de assobios e risadas continuou.</p>
+
+            <p>Colina ostentava o seu corpo com confiança, embora com suas marcas; aquele era o seu templo, voluptuoso e forte. Dois pequenos presurinhos espreitavam sobre a Capulana Ntovheki, enquanto os seus passos delicados equilibravam a bacia de madura sobre a cabeça. Não que fosse pesada, mas porque existe uma arte no jeito de andar que preserva a maciez da polpa branca. Colina deslizava pelo passeio, com os seus braços segurando as bordas do recipiente.</p>
+
+            <p>— "Olha só esta beleza! Consegueu ver este rabo? Esta, quando distribuíram mamas, não estava na fila. Podes não responder, sua feia."</p>
+
+            <p>Repetia o bando organizado, numa espécie de ritual. Aquele era o quotidiano de Chico e amigos, e as diferentes expressões e reações das mulheres ao atravessarem a zona dissipavam as dúvidas sobre o quão agradável era preferir tais elogios. Algumas energonhouras, refugiando os olhos no peito, outras deleitavam-se na sedução ampliando o bailado das melancias, outras sorriam timidamente, e ainda havia aquelas que buscavam outros caminhos. Mas quem pode fugir do destino? Fugir do corpo não é como fugir da sua própria casa?</p>
+
+            <p>Eles evacionaram todas as mulheres que se movimentavam por ali, e só se aquietaram quando a irmã do Chico passou.</p>
+
+            <p class="text-right font-semibold mt-6">Énia Lipanga</p>
+        </div>
+
+        <!-- Citação -->
+        <div class="mt-6">
+            <div class="quote-bar px-4 py-3">
+                <h3 class="title-font font-bold text-lg mb-1" style="color:var(--brand)">Canto é entoado na vida pública quando mulheres passam</h3>
+                <p class="text-sm italic">(Estamos a ver as nádegas, e colocamos)</p>
+            </div>
+        </div>
+
+        <!-- Ficha técnica -->
+        <div class="mt-6">
+            <h3 class="title-font text-lg font-bold mb-4" style="color:var(--brand)">Ficha técnica</h3>
+            <div class="space-y-3">
+                <div class="flex"><span class="font-semibold w-28 flex-shrink-0">Texto:</span><span>Énia Lipanga</span></div>
+                <div class="flex"><span class="font-semibold w-28 flex-shrink-0">Fotografia:</span><span>Evito Andrade</span></div>
+                <div class="flex"><span class="font-semibold w-28 flex-shrink-0">Edição:</span><span>Samuel</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Metade da imagem -->
+    <div class="image-half">
+        <div class="image-text-overlay top-text">
+            Canto é entoado na vida pública quando mulheres passam
+        </div>
+        <div class="image-text-overlay bottom-text">
+            estamos a ver nádegas, e cobiçamos
+        </div>
+        <div class="image-caption">
+            Fotografia: Evito Andrade - Mulher com capulana tradicional
+        </div>
+    </div>
+</div>
+
+<!-- Rodapé -->
+<div class="footer-section p-4 text-center text-sm text-gray-600 mt-auto">
+    <p>Amostra Virtual · Literatura Contemporânea</p>
+</div>
+
+<script>
+    (function () {
+        /* ===== ÁUDIO AUTOPLAY COM SINALIZAÇÃO ===== */
+        const audio = document.getElementById('bg-audio');
+        const tip = document.getElementById('audio-tip');
+        const wantsSound = localStorage.getItem('wantsSound') === '1';
+
+        const showTip = () => tip.classList.add('show');
+        const hideTip = () => tip.classList.remove('show');
+
+        const tryPlay = async (unmuteAfter=false) => {
+            try {
+                audio.muted = true;
+                await audio.play();
+                if (unmuteAfter || wantsSound) {
+                    setTimeout(() => {
+                        try {
+                            audio.muted = false; audio.volume = 1.0;
+                            localStorage.setItem('wantsSound','1');
+                            hideTip();
+                        } catch(e){ showTip(); }
+                    }, 300);
+                } else { showTip(); }
+            } catch (err) {
+                showTip(); attachUserGestureHandlers();
+            }
+        };
+
+        const onFirstUserGesture = async () => {
+            try {
+                audio.muted = false; audio.volume = 1.0;
+                await audio.play();
+                localStorage.setItem('wantsSound','1');
+                hideTip(); detachUserGestureHandlers();
+            } catch(e){ showTip(); }
+        };
+
+        const gestureEvents = ['click','pointerdown','touchstart','keydown','wheel','mousedown'];
+        function attachUserGestureHandlers(){
+            gestureEvents.forEach(ev => window.addEventListener(ev, onFirstUserGesture, { once:true, passive:true }));
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') tryPlay(true);
+            });
+        }
+        function detachUserGestureHandlers(){
+            gestureEvents.forEach(ev => window.removeEventListener(ev, onFirstUserGesture, { once:true }));
+        }
+        tryPlay(true);
+
+        /* ===== PARALLAX SUAVE NA IMAGEM ===== */
+        const imageHalf = document.querySelector('.image-half');
+        let paused = false;
+        let mouseX=0, mouseY=0, scrollY=0;
+
+        function parallax(){
+            if (paused) return;
+            // Parallax baseado em posição do rato e scroll
+            const moveX = (mouseX - window.innerWidth/2) * 0.003;  // 0.3%
+            const moveY = ((mouseY - window.innerHeight/2) * 0.003) + (scrollY * 0.0008);
+            imageHalf.style.transform = `translate3d(${moveX}rem, ${moveY}rem, 0)`;
+        }
+        window.addEventListener('mousemove', (e)=>{ mouseX=e.clientX; mouseY=e.clientY; parallax(); }, {passive:true});
+        window.addEventListener('scroll', ()=>{ scrollY=window.scrollY || 0; parallax(); }, {passive:true});
+
+        /* ===== BOTÃO PAUSAR/ANIMAR ===== */
+        const btn = document.getElementById('animBtn');
+        function setPaused(state){
+            paused = state;
+            document.body.classList.toggle('paused', paused);
+            btn.setAttribute('aria-pressed', String(!paused));
+            btn.textContent = paused ? '▶️ Animar' : '⏸️ Pausar';
+            // travar também pequenos efeitos JS
+            if (paused){ imageHalf.style.transform = 'none'; }
+            localStorage.setItem('animPaused', paused ? '1' : '0');
+        }
+        btn.addEventListener('click', ()=> setPaused(!paused));
+        // Restaurar preferência
+        setPaused(localStorage.getItem('animPaused') === '1');
+
+    })();
+</script>
+</body>
+</html>
